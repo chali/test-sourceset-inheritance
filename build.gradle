@@ -1,0 +1,38 @@
+apply plugin: "java"
+apply plugin: "idea"
+
+sourceSets {
+    integTest {
+        java {
+            compileClasspath += test.output
+            runtimeClasspath += test.output
+        }
+    }
+    specialTest {
+        java {
+            compileClasspath += integTest.output
+            runtimeClasspath += integTest.output
+        }
+    }
+}
+
+
+idea {
+    module {
+        testSourceDirs += file('src/integTest/java')
+        testSourceDirs += file('src/specialTest/java')
+    }
+}
+
+task integTest(type:Test) {
+    testClassesDirs = project.sourceSets.integTest.output.classesDirs
+    classpath = project.sourceSets.integTest.runtimeClasspath
+}
+
+task specialTest(type:Test) {
+    testClassesDirs = project.sourceSets.specialTest.output.classesDirs
+    classpath = project.sourceSets.specialTest.runtimeClasspath
+}
+
+check.dependsOn integTest
+check.dependsOn specialTest
